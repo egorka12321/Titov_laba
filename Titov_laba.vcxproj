@@ -127,7 +127,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CS.cpp" />
+    <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Titov_laba.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CS.h" />
+    <ClInclude Include="Pipe.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

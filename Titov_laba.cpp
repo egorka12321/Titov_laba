@@ -1,163 +1,123 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <unordered_map>
+#include "Pipe.h"
+#include "CS.h"
+#include "Utils.h"
 using namespace std;
-struct Pipe {
-    string name = "None";
-    double length = 0;
-    int diameter = 0;
-    bool repair = false;
-};
-struct CS {
-    string name = "None";
-    int workshop = 0;
-    int workshop_on = 0;
-    char efficciency = 'F';
-};
 
- void Check_int(int& integer) {
-    cin >> integer;
-    while (cin.fail() || cin.peek() != '\n' || integer <= 0) {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try again \n" << "Enter integer" <<endl;
-        cin >> integer;
-    }
-}
-void Check_dbl(double& doub) {
-    cin >> doub;
-    while (cin.fail() || cin.peek() != '\n' || doub < 0) {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try again \n" << "Enter double" << endl;
-        cin >> doub;
-    }
-}
-void Check_bool(bool& boolean) {
-    cin >> boolean;
-    while (cin.fail() || cin.peek() != '\n') {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try again \n" << "Enter bool" << endl;
-        cin >> boolean;
-    }
-}
-void Check_char(char& character) {
-    cin >> character;
-    while (cin.fail() || cin.peek() != '\n' || (character < 'A') || (character > 'D')) {
-        cin.clear();
-        cin.ignore(1000, '\n');
-        cout << "Try again \n" << "Enter symbol from A to D" << endl;
-        cin >> character;
-    }
-}
-Pipe AddPipe() {
-    Pipe truba;
-    cout << "Enter name of the pipe: ";
-    cin.ignore();
-    getline(cin,truba.name);
+istream& operator >> (istream& in, Pipe& truba) {
+    cout << "Add pipe\n" << "Enter name of the pipe: ";
+    in >> ws;
+    getline(in, truba.name);
     cout << "Enter length of the pipe: ";
-    Check_dbl(truba.length);
+    truba.length = GetCorrectData(0.0, 10000.0);
     cout << "Enter diameter of the pipe: ";
-    Check_int(truba.diameter);
+    truba.diameter = GetCorrectData(500, 1400);
     cout << "Enter condition of the pipe: ";
-    Check_bool(truba.repair);
-    return truba;
+    truba.repair = GetCorrectData(0, 1);
+    return in;
 }
-CS AddCS() {
-    CS comp_station;
-    cout << "Enter name of the CS: ";
-    cin.ignore();
-    getline(cin,comp_station.name);
+
+istream& operator >> (istream& in, CS& comp_station) {
+    cout << "Add compressor station\n" << "Enter name of the CS: ";
+    in >> ws;
+    getline(cin, comp_station.name);
     cout << "Enter number of the workshops: ";
-    Check_int(comp_station.workshop);
+    comp_station.workshop = GetCorrectData(1, 10000);
     cout << "Enter number of the workshops in operation: ";
-    Check_int(comp_station.workshop_on);
+    comp_station.workshop_on = GetCorrectData(1, comp_station.workshop);
     while (comp_station.workshop_on > comp_station.workshop) {
         cout << "Cant be like this!!!" << endl;
-        Check_int(comp_station.workshop_on);
+        comp_station.workshop_on = GetCorrectData(1, comp_station.workshop);
     }
     cout << "Enter efficiency of CS: ";
-    Check_char(comp_station.efficciency);
-    return comp_station;
+    comp_station.efficciency = GetCorrectData('A', 'D');
+    return in;
 }
-void ViewPipe(const Pipe p) {
+
+ostream& operator << (ostream& out, const Pipe& p) {
     if (p.length == 0)
-        cout << "\nNo pipes added" << endl;
+        out << "\nNo pipes added" << endl;
     else {
-        cout << "\nPipe:" << endl;
-        cout << "Pipe name: " << p.name
+        out << "\nPipe:" << endl;
+        out << "Pipe name: " << p.name
             << "\nPipe length: " << p.length
             << "\nPipe diameter: " << p.diameter
             << "\nPipe condition: " << p.repair << endl;
     }
+    return out;
 }
-void ViewCS(const CS cs) {
+
+ostream& operator << (ostream& out, const CS& cs) {
     if (cs.workshop == 0)
-        cout << "\nNo CS added" << endl;
+        out << "\nNo CS added" << endl;
     else {
-        cout << "\nCompressor station:" << endl;
-        cout << "CS name: " << cs.name
+        out << "\nCompressor station:" << endl;
+        out << "CS name: " << cs.name
             << "\nCS number of the workshops: " << cs.workshop
             << "\nCS number of the workshops in operation: " << cs.workshop_on
             << "\nCS efficiency: " << cs.efficciency << endl;
     }
+    return out;
 }
-//void Input_file(Pipe p,CS cs) {
-//    ofstream fout("Titov_laba.txt");
-//    if (p.length != 0) {
-//        fout << "Pipe" << endl;
-//        fout << p.name << endl;
-//        fout << p.length << endl;
-//        fout << p.diameter << endl;
-//        fout << p.repair << endl;
-//    }
-//    else
-//        cout << "No Pipe data to record" << endl;
-//    if (cs.workshop != 0) {
-//        fout << "Compressor station" << endl;
-//        fout << cs.name << endl;
-//        fout << cs.workshop << endl;
-//        fout << cs.workshop_on << endl;
-//        fout << cs.efficciency << endl;
-//    }
-//    else
-//        cout << "No CS data to record" << endl;
-//    fout.close();
-//}
-void Input_file_with_pipe(const Pipe& p, fstream& file) {
+void Edit_pipe(Pipe& p) {
     if (p.length != 0) {
-        file << "Pipe" << endl;
-        file << p.name << endl;
-        file << p.length << endl;
-        file << p.diameter << endl;
-        file << p.repair << endl;
+        cout << "Edit pipe\n" << "Pipe condition: ";
+        p.repair = GetCorrectData(0, 1);
+    }
+    else
+        cout << "You don't have a pipe" << endl;
+}
+void Edit_cs(CS& cs) {
+    if (cs.workshop != 0) {
+        cout << "Edit compressor station\n" << "CS number of the workshops in operation: ";
+        cs.workshop_on = GetCorrectData(1, cs.workshop);
+        while (cs.workshop_on > cs.workshop) {
+            cout << "Cant be like this!!!\n" << "CS number of the workshops in operation: ";
+            cs.workshop_on = GetCorrectData(1, cs.workshop);
+        }
+    }
+    else
+        cout << "You don't have a compressor station" << endl;
+}
+void Input_file_with_pipe(const Pipe& p) {
+    ofstream fout("Titov_laba.txt");
+    if (p.length != 0) {
+        fout << "Pipe" << endl;
+        fout << p.name << endl;
+        fout << p.length << endl;
+        fout << p.diameter << endl;
+        fout << p.repair << endl;
+        fout.close();
     }
     else
         cout << "No Pipe data to record" << endl;
 }
 
-void Input_file_with_cs(const CS& cs, fstream& file) {
+void Input_file_with_cs(const CS& cs) {
+    ofstream fout("Titov_laba.txt", ios::app);
     if (cs.workshop != 0) {
-        file << "Compressor station" << endl;
-        file << cs.name << endl;
-        file << cs.workshop << endl;
-        file << cs.workshop_on << endl;
-        file << cs.efficciency << endl;
+        fout << "Compressor station" << endl;
+        fout << cs.name << endl;
+        fout << cs.workshop << endl;
+        fout << cs.workshop_on << endl;
+        fout << cs.efficciency << endl;
+        fout.close();
     }
     else
         cout << "No CS data to record" << endl;
 }
 
-void Output_file(Pipe& pipe,CS& cs) {
+void Output_file_with_pipe(Pipe& pipe) {
     ifstream fin("Titov_laba.txt");
     if (fin) {
-        string pipe_or_cs_name = "no";
-        int p = 0;
-        int s = 0;
-        while (getline(fin, pipe_or_cs_name))
+        string pipe_name = "no";
+        bool p = 0;
+        while (getline(fin, pipe_name))
         {
-            if (pipe_or_cs_name == "Pipe")
+            if (pipe_name == "Pipe")
             {
                 cout << "Data received from file about pipe:" << endl;
                 cout << "\nPipe" << endl;
@@ -169,13 +129,28 @@ void Output_file(Pipe& pipe,CS& cs) {
                 cout << "Pipe diameter: " << pipe.diameter << endl;
                 fin >> pipe.repair;
                 cout << "The pipe attribute: " << pipe.repair << endl;
-                p += 1;
+                p = true;
             }
-            if (pipe_or_cs_name == "Compressor station")
+        }
+        if (p == false)
+        {
+            cout << "No information about pipe." << endl;
+        }
+        fin.close();
+    }
+}
+void Output_file_with_cs(CS& cs) {
+    ifstream fin("Titov_laba.txt");
+    if (fin) {
+        string cs_name = "no";
+        bool s = 0;
+        while (getline(fin, cs_name))
+        {
+            if (cs_name == "Compressor station")
             {
                 cout << "Data received from file about CS:" << endl;
                 cout << "\nCompressor station" << endl;
-                getline(fin,cs.name);
+                getline(fin, cs.name);
                 cout << "CS title: " << cs.name << endl;
                 fin >> cs.workshop;
                 cout << "Number of workshops of the CS: " << cs.workshop << endl;
@@ -183,23 +158,20 @@ void Output_file(Pipe& pipe,CS& cs) {
                 cout << "Number of workshops in operation of the CS: " << cs.workshop_on << endl;
                 fin >> cs.efficciency;
                 cout << "CS efficiency: " << cs.efficciency << endl;
-                s += 1;
+                s = true;
             }
         }
-        if (p == 0)
-        {
-            cout << "No information about pipe." << endl;
-        }
-        if (s == 0)
+        if (s == false)
         {
             cout << "No information about station." << endl;
         }
         fin.close();
     }
-
 }
 int main()
 {
+    unordered_map <int, Pipe> pipes;
+    unordered_map <int, CS> stations;
     Pipe p;
     CS cs;
     while (true) {
@@ -212,70 +184,39 @@ int main()
             <<"\n 6. Save"
             <<"\n 7. Load"
             <<"\n 8. Exit"<<endl;
-        int value = -1;
+        int value;
         cout << "\nSelect: ";
-        Check_int(value);
+        value = GetCorrectData(1,8);
         switch (value) {
             case 1: {
-                if ((p.length) == 0) {
-                    cout << "Add pipe" << endl;
-                    p = AddPipe();
-                }
-                else
-                    cout << "You already have one pipe" << endl;
+                cin >> p;
                 break;
             }
             case 2: {
-                if (cs.workshop == 0) {
-                    cout << "Add compressor station" << endl;
-                    cs = AddCS();
-                }
-                else
-                    cout << "You already have one comressor station" << endl;
+                cin >> cs;
                 break;
             }
             case 3: {
                 cout << "View all objects" << endl;
-                ViewPipe(p);
-                ViewCS(cs);
+                cout << p;
+                cout << cs;
                 break;
             }
             case 4: {
-                if (p.length != 0) {
-                    cout << "Edit pipe\n" << "Pipe condition: ";
-                    Check_bool(p.repair);
-                }
-                else
-                    cout << "You don't have a pipe" << endl;
+                Edit_pipe(p);
                 break;
             }
             case 5: {
-                if (cs.workshop != 0) {
-                    cout << "Edit compressor station\n" << "CS number of the workshops in operation: ";
-                    Check_int(cs.workshop_on);
-                    while (cs.workshop_on > cs.workshop) {
-                        cout << "Cant be like this!!!\n" << "CS number of the workshops in operation: ";
-                        Check_int(cs.workshop_on);
-                    }
-                }
-                else
-                    cout << "You don't have a compressor station" << endl;
+                Edit_cs(cs);
                 break;
             case 6: {
-                //Input_file(p,cs);
-                fstream file("Titov_laba.txt", ios::out);
-                if (file) {
-                    Input_file_with_pipe(p, file);
-                    Input_file_with_cs(cs, file);
-                    file.close();
-                }
-                else {
-                    cout << "Failed to open file" << endl;
-                }
+                Input_file_with_pipe(p);
+                Input_file_with_cs(cs);
                 break;
             }
             case 7: {
-                Output_file(p,cs);
+                Output_file_with_pipe(p);
+                Output_file_with_cs(cs);
                 break;
             }
             case 8: {
@@ -283,10 +224,9 @@ int main()
                 return 0;
             }
             default:
-                cout << "Enter number from 0 to 7\n";
+                cout << "Enter number from 1 to 8\n";
                 break;
             }
         }
     }
-
 }
