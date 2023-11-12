@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 template <typename T>
 T GetCorrectData(T min, T max) {
     T x;

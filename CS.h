@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 using namespace std;
+
 class CS
 {
 public:
@@ -10,9 +12,12 @@ public:
     char efficciency = 'F';
     int id_cs = 0;
     static int max_id_cs;
-    friend istream& operator >> (istream& in, CS& comp_station);
-    friend ostream& operator << (ostream& out, const CS& cs);
-    friend void Input_file_with_cs(const CS& cs);
-    friend void Output_file_with_cs(CS& cs);
     CS();
+    int get_id_c() { return id_cs; };
+    friend ostream& operator << (ostream& out, const CS& cs);
+    friend istream& operator >> (istream& in, CS& comp_station);
+    friend void Add_cs(unordered_map <int, CS>& stations);
+    friend void View_cs(unordered_map <int, CS>& stations);
+    friend void Save_cstation(ofstream& fout, const CS& cs);
+    friend CS& Load_station(ifstream& fin, CS& cs);
 };

@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 using namespace std;
+
 class Pipe
 {
 public:
@@ -10,9 +12,12 @@ public:
 	bool repair = false;
 	int id_pipe = 0;
 	static int max_id_pipe;
-	friend istream& operator >> (istream& in, Pipe& truba);
-	friend ostream& operator << (ostream& out, const Pipe& p);
-	friend void Input_file_with_pipe(const Pipe& p);
-	friend void Output_file_with_pipe(Pipe& pipe);
 	Pipe();
+	int get_id_p() { return id_pipe; };
+	friend ostream& operator << (ostream& out, const Pipe& p);
+	friend istream& operator >> (istream& in, Pipe& truba);
+	friend void Add_pipes(unordered_map <int, Pipe>& pipes);
+	friend void View_pipes(unordered_map <int, Pipe>& pipes);
+	friend void Save_pipe(ofstream& fout, const Pipe& p);
+	friend Pipe& Load_pipe(ifstream& fin, Pipe& pipe);
 };
