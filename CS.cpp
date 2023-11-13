@@ -13,7 +13,7 @@ CS::CS() {
 istream& operator >> (istream& in, CS& comp_station) {
     cout << "Add compressor station\n" << "Enter name of the CS: ";
     in >> ws;
-    getline(cin, comp_station.name);
+    getline(in, comp_station.name);
     cout << "Enter number of the workshops: ";
     comp_station.workshop = GetCorrectData(1, 10000);
     cout << "Enter number of the workshops in operation: ";
@@ -24,6 +24,7 @@ istream& operator >> (istream& in, CS& comp_station) {
     }
     cout << "Enter efficiency of CS: ";
     comp_station.efficciency = GetCorrectData('A', 'D');
+    Log("Your cs successfully entered", 1);
     return in;
 }
 
@@ -46,7 +47,7 @@ void Add_cs(unordered_map <int, CS>& stations) {
 
 void View_cs(unordered_map <int, CS>& stations) {
     if (stations.size() == 0)
-        cout << "You don't have compressor stations" << endl;
+        Log("You don't have compressor stations", 1);
     else {
         for (auto& cs : stations) {
             cout << cs.second << endl;
@@ -54,14 +55,9 @@ void View_cs(unordered_map <int, CS>& stations) {
     }
 }
 
-void Save_cs(unordered_map <int, CS>& stations) {
-    if (stations.empty())
-        cout << "You don't have compressor stations" << endl;
-}
-
 void Save_cstation(ofstream& fout, const CS& cs) {
     if (cs.name.empty())
-        cout << "No CS data to record" << endl;
+        Log("No CS data to record", 1);
     else {
         fout << "Compressor station" << endl;
         fout << cs.name << endl;

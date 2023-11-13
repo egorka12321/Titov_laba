@@ -1,0 +1,31 @@
+4 2
+Pipe
+333
+333
+555
+1
+Pipe
+pipe 1
+32
+500
+1
+Pipe
+ppppppp
+12
+600
+1
+Pipe
+pipe 1234 32
+32
+500
+1
+Compressor station
+cs hu
+30
+10
+A
+Compressor station
+dhsu
+32
+22
+A

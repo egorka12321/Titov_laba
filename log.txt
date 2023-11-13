@@ -1,0 +1,121 @@
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+6
+Enter name of your file
+f
+Finished loading from file
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+3
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+4
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+1
+Choose filter's number:
+1. Name
+2. Under repair
+1
+Enter pipe's name to find: 
+p
+Pipes: 
+
+Pipe:
+id: 1
+Pipe name: pipe 1
+Pipe length: 32
+Pipe diameter: 500
+Pipe condition: 1
+max id: 4
+
+
+Pipe:
+id: 2
+Pipe name: ppppppp
+Pipe length: 12
+Pipe diameter: 600
+Pipe condition: 1
+max id: 4
+
+
+Pipe:
+id: 3
+Pipe name: pipe 1234 32
+Pipe length: 32
+Pipe diameter: 500
+Pipe condition: 1
+max id: 4
+
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+4
+Select objects to delete:
+1. Delete found pipes
+2. Delete found compressor stations
+3. Delete both
+1
+1. Delete all filtered pipes
+2. Delete using choosing
+1
+The pipe 1 has been successfully deleted
+The pipe 2 has been successfully deleted
+The pipe 3 has been successfully deleted
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+5
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+3
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 

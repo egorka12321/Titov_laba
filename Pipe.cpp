@@ -20,6 +20,7 @@ istream& operator >> (istream& in, Pipe& truba) {
     truba.diameter = GetCorrectData(500, 1400);
     cout << "Enter condition of the pipe: ";
     truba.repair = GetCorrectData(0, 1);
+    Log("Your pipe successfully entered",1);
     return in;
 }
 
@@ -42,7 +43,7 @@ void Add_pipes(unordered_map <int, Pipe>& pipes) {
 
 void View_pipes(unordered_map <int, Pipe>& pipes) {
     if (pipes.size() == 0)
-        cout << "You don't have pipes" << endl;
+        Log("You don't have pipes", 1);
     else {
         for (auto& pipe : pipes) {
             cout << pipe.second << endl;
@@ -52,7 +53,7 @@ void View_pipes(unordered_map <int, Pipe>& pipes) {
 
 void Save_pipe(ofstream& fout, const Pipe& p) {
     if (p.name.empty())
-        cout << "No Pipe data to record" << endl;
+        Log("No Pipe data to record", 1);
     else {
         fout << "Pipe" << endl;
         fout << p.name << endl;
