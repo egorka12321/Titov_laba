@@ -44,7 +44,7 @@ void Load(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations) {
     int count_pipes = 0;
     int count_stations = 0;
     string filename;
-    Log("Enter name of your file",2);
+    Log("Enter name of your file: ",2);
     cin >> filename;
     Log_cin(filename);
     ifstream fin;
@@ -91,6 +91,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             Log("Choose filter's number:", 1);
             Log("1. Name", 1);
             Log("2. Under repair", 1);
+            Log("Select: ", 2);
             cin >> filter;
             Log_cin(to_string(filter));
             if (filter == 1) {
@@ -100,16 +101,12 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 getline(cin, pipe_name);
                 Log_cin(pipe_name);
                 for (const auto& p : pipes) {
-                    if (p.second.name.find(pipe_name) != string::npos)
+                    if (p.second.name.find(pipe_name) != string::npos) {
                         matching_pipes.insert(p.first);
-                }
-                if (!matching_pipes.empty()) {
-                    Log("Pipes: ", 1);
-                    for (int pipe_id : matching_pipes) {
-                        Log(pipes[pipe_id], 1);
+                        Log(pipes[p.first], 1);
                     }
                 }
-                else
+                if (matching_pipes.empty())
                     Log("No pipes with this name", 1);
             }
             else if (filter == 2) {
@@ -118,16 +115,12 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 is_u_r = GetCorrectData(0, 1);
                 Log_cin(to_string(is_u_r));
                 for (const auto& p : pipes) {
-                    if (to_string(p.second.repair).find(to_string(is_u_r)) != string::npos)
+                    if (to_string(p.second.repair).find(to_string(is_u_r)) != string::npos) {
                         matching_pipes.insert(p.first);
-                }
-                if (!matching_pipes.empty()) {
-                    Log("Pipes: ", 1);
-                    for (int pipe_id : matching_pipes) {
-                        Log(pipes[pipe_id], 1);
+                        Log(pipes[p.first], 1);
                     }
                 }
-                else
+                if (matching_pipes.empty())
                     Log("No pipes with this status of repairing", 1);
             }
             else
@@ -137,6 +130,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             Log("Choose filter's number:", 1);
             Log("1. Name", 1);
             Log("2.Percent", 1);
+            Log("Select: ", 2);
             cin >> filter;
             Log_cin(to_string(filter));
             if (filter == 1) {
@@ -145,16 +139,12 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 cin >> ws;
                 getline(cin, cs_name);
                 for (const auto& cs : stations) {
-                    if (cs.second.name.find(cs_name) != string::npos)
+                    if (cs.second.name.find(cs_name) != string::npos) {
                         matching_stations.insert(cs.first);
-                }
-                if (!matching_stations.empty()) {
-                    Log("CS: ", 1);
-                    for (int cs_id : matching_stations) {
-                        Log(stations[cs_id], 1);
+                        Log(stations[cs.first], 1);
                     }
                 }
-                else
+                if (matching_stations.empty())
                     Log("No compressor stations with this name", 1);
             }
             else if (filter == 2) {
@@ -164,16 +154,12 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 Log_cin(to_string(percent));
                 for (const auto& cs : stations) {
                     double real_percent = ((cs.second.workshop - cs.second.workshop_on) * 100.0 / cs.second.workshop);
-                    if (abs(percent-real_percent)<=1)
+                    if (abs(percent - real_percent) <= 1) {
                         matching_stations.insert(cs.first);
-                }
-                if (!matching_stations.empty()) {
-                    Log("CS: ", 1);
-                    for (int cs_id : matching_stations) {
-                        Log(stations[cs_id], 1);
+                        Log(stations[cs.first], 1);
                     }
                 }
-                else
+                if (matching_stations.empty())
                     Log("No compressor stations with this percent status", 1);
             }
             else
@@ -183,11 +169,13 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             Log("Select objects to edit:", 1);
             Log("1. Edit found pipes", 1);
             Log("2. Edit found compressor stations", 1);
+            Log("Select: ", 2);
             int edit_choice = GetCorrectData(1, 2);
             Log_cin(to_string(edit_choice));
             if (edit_choice == 1) {
                 Log("1. Edit all filtered pipes", 1);
                 Log("2. Edit using choosing", 1);
+                Log("Select: ", 2);
                 int changeChoice = GetCorrectData(1, 2);
                 Log_cin(to_string(changeChoice));
                 if (matching_pipes.empty())
@@ -222,6 +210,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             else if (edit_choice == 2) {
                 Log("1. Edit all filtered compressor stations", 1);
                 Log("2. Edit using choosing", 1);
+                Log("Select: ", 2);
                 int changeChoice = GetCorrectData(1, 2);
                 Log_cin(changeChoice);
                 if (matching_stations.empty())
@@ -281,11 +270,13 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 Log("1. Delete found pipes", 1);
                 Log("2. Delete found compressor stations", 1);
                 Log("3. Delete both", 1);
+                Log("Select: ", 2);
                 int removal_choice = GetCorrectData(1, 3);
                 Log_cin(to_string(removal_choice));
                 if (removal_choice == 1 || removal_choice == 3) {
                     Log("1. Delete all filtered pipes", 1);
                     Log("2. Delete using choosing", 1);
+                    Log("Select: ", 2);
                     int deleteChoice = GetCorrectData(1, 2);
                     Log_cin(to_string(deleteChoice));
                     if (deleteChoice == 1) {
@@ -305,8 +296,9 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                         getline(cin, id_input);
                         Log_cin(id_input);
                         istringstream ss(id_input);
-                        while (ss >> n)
+                        while (ss >> n) {
                             idPipe.insert(n);
+                        }
                         for (int id_pipe : idPipe) {
                             auto pipe_filtered = pipes.find(id_pipe);
                             pipes.erase(pipe_filtered);
@@ -319,6 +311,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 else if (removal_choice == 2 || removal_choice == 3) {
                     Log("1. Delete all filtered compressor stations", 1);
                     Log("2. Delete using choosing", 1);
+                    Log("Select: ", 2);
                     int deleteChoice = GetCorrectData(1, 2);
                     Log_cin(to_string(deleteChoice));
                     if (deleteChoice == 1) {

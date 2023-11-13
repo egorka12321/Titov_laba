@@ -8,7 +8,7 @@ Choose Option:
 7. Exit
 Select: 
 6
-Enter name of your file
+Enter name of your file: 
 f
 Finished loading from file
 Choose Option:
@@ -42,10 +42,34 @@ Select:
 Choose filter's number:
 1. Name
 2. Under repair
+Select: 
+2
+Enter the status of repairing: 0 or 1
+0
+
+Pipe:
+id: 0
+Pipe name: 333
+Pipe length: 333
+Pipe diameter: 555
+Pipe condition: 0
+max id: 4
+
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
 1
-Enter pipe's name to find: 
-p
-Pipes: 
+Choose filter's number:
+1. Name
+2. Under repair
+Select: 
+2
+Enter the status of repairing: 0 or 1
+1
 
 Pipe:
 id: 1
@@ -80,18 +104,72 @@ Choose Option :
 4. Delete filtered objects
 5. Exit
 Select: 
+2
+Choose filter's number:
+1. Name
+2.Percent
+Select: 
+1
+Enter compressor station's name to find: 
+
+Compressor station:
+id: 0
+CS name: cs hu
+CS number of the workshops: 30
+CS number of the workshops in operation: 10
+CS efficiency: A
+max id: 3
+
+Compressor station:
+id: 1
+CS name: cs hhaha
+CS number of the workshops: 33
+CS number of the workshops in operation: 21
+CS efficiency: A
+max id: 3
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+2
+Choose filter's number:
+1. Name
+2.Percent
+Select: 
+1
+Enter compressor station's name to find: 
+
+Compressor station:
+id: 2
+CS name: www
+CS number of the workshops: 34
+CS number of the workshops in operation: 21
+CS efficiency: B
+max id: 3
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
 4
 Select objects to delete:
 1. Delete found pipes
 2. Delete found compressor stations
 3. Delete both
-1
-1. Delete all filtered pipes
+Select: 
+2
+1. Delete all filtered compressor stations
 2. Delete using choosing
-1
-The pipe 1 has been successfully deleted
-The pipe 2 has been successfully deleted
-The pipe 3 has been successfully deleted
+Select: 
+2
+Enter cs id's set: 
+0
+The cs 0 has been successfully deleted
 Choose Option :
 1. Filter for pipes
 2. Filter for compressor stations
@@ -118,4 +196,133 @@ Choose Option:
 5. Save
 6. Load
 7. Exit
+Select: 
+4
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+2
+Choose filter's number:
+1. Name
+2.Percent
+Select: 
+1
+Enter compressor station's name to find: 
+
+Compressor station:
+id: 1
+CS name: cs hhaha
+CS number of the workshops: 33
+CS number of the workshops in operation: 21
+CS efficiency: A
+max id: 3
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+4
+Select objects to delete:
+1. Delete found pipes
+2. Delete found compressor stations
+3. Delete both
+Select: 
+1
+1. Delete all filtered pipes
+2. Delete using choosing
+Select: 
+1
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+5
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+3
+Choose Option:
+1. Add pipe
+2. Add compressor station
+3. View all objects
+4. Filter
+5. Save
+6. Load
+7. Exit
+Select: 
+4
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+1
+Choose filter's number:
+1. Name
+2. Under repair
+Select: 
+1
+Enter pipe's name to find: 
+pipe
+
+Pipe:
+id: 1
+Pipe name: pipe 1
+Pipe length: 32
+Pipe diameter: 500
+Pipe condition: 1
+max id: 4
+
+
+Pipe:
+id: 3
+Pipe name: pipe 1234 32
+Pipe length: 32
+Pipe diameter: 500
+Pipe condition: 1
+max id: 4
+
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
+Select: 
+4
+Select objects to delete:
+1. Delete found pipes
+2. Delete found compressor stations
+3. Delete both
+Select: 
+1
+1. Delete all filtered pipes
+2. Delete using choosing
+Select: 
+1
+The pipe 1 has been successfully deleted
+The pipe 3 has been successfully deleted
+Choose Option :
+1. Filter for pipes
+2. Filter for compressor stations
+3. Edit filtered objects
+4. Delete filtered objects
+5. Exit
 Select: 
