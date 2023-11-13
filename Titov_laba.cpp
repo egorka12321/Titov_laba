@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include <sstream>
 #include "Pipe.h"
 #include "CS.h"
 #include "Utils.h"
@@ -74,7 +75,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
     while (true) {
         cout << "\nChoose Option:"
             << "\n 1. Filter for pipes"
-            << "\n 2. Filter for compressor station"
+            << "\n 2. Filter for compressor stations"
             << "\n 3. Edit filtered objects"
             << "\n 4. Delete filtered objects"
             << "\n 5. Exit" << endl;
@@ -82,8 +83,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
         value = GetCorrectData(1, 5);
         switch (value) {
         case 1:
-            //matching_pipes.clear();
-            cout << "Choose filter:" << "\n1. Name" << "\n2. Under repair" << endl;
+            cout << "Choose filter's number:" << "\n1. Name" << "\n2. Under repair" << endl;
             cin >> filter;
             if (filter == 1) {
                 string pipe_name;
@@ -124,7 +124,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 cout << "No have this filter" << endl;
             break;
         case 2:
-            cout << "Choose filter:" << "\n1. Name" << "\n2. Percent" << endl;
+            cout << "Choose filter's number:" << "\n1. Name" << "\n2. Percent" << endl;
             cin >> filter;
             if (filter == 1) {
                 string cs_name;
@@ -149,8 +149,8 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 cout << "Enter the percent: from 0 or 100" << endl;
                 percent = GetCorrectData(0, 100);
                 for (const auto& cs : stations) {
-                    double real_percent = round((cs.second.workshop - cs.second.workshop_on) * 100.0 / cs.second.workshop);
-                    if (percent == real_percent)
+                    double real_percent = ((cs.second.workshop - cs.second.workshop_on) * 100.0 / cs.second.workshop);
+                    if (abs(percent-real_percent)<=1)
                         matching_stations.insert(cs.first);
                 }
                 if (!matching_stations.empty()) {
@@ -171,33 +171,82 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             cout << "2. Edit found compressor stations" << endl;
             int edit_choice = GetCorrectData(1, 2);
             if (edit_choice == 1) {
-                if (!matching_pipes.empty()) {
-                    for (int pipe_id : matching_pipes) {
-                        Pipe& p = pipes[pipe_id];
-                        p.repair = !p.repair;
-                        cout << "The status of pipe " + to_string(pipe_id) + " has been successfully changed" << endl;
-                    }
-                }
-                else
+                cout << "1. Edit all filtered pipes" << endl;
+                cout << "2. Edit using choosing" << endl;
+                int changeChoice = GetCorrectData(1, 2);
+                if (matching_pipes.empty()) 
                     cout << "You don'h have filtered pipes";
-            }
-            if (edit_choice == 2) {
-                if (!matching_stations.empty()) {
-                    for (int cs_id : matching_stations) {
-                        CS& cs = stations[cs_id];
-                        cout << ("The number of workshops: " + to_string(cs.workshop)) << endl;
-                        cout << ("Type the new number of workshops in operation:") << endl;
-                        cs.workshop_on = GetCorrectData(1, cs.workshop);
-                        while (cs.workshop < cs.workshop_on) {
-                            cout << ("The number of workshops can't be less then the number of workshops in operation") << endl;
-                            cout << "Type the right number" << endl;
-                            cs.workshop_on = GetCorrectData(1, cs.workshop);
+                else {
+                    if (changeChoice == 1) {
+                        for (int pipe_id : matching_pipes) {
+                            Pipe& p = pipes[pipe_id];
+                            p.repair = !p.repair;
+                            cout << "The status of pipe " + to_string(pipe_id) + " has been successfully changed" << endl;
                         }
-                        cout << ("The status of compressor station " + to_string(cs_id) + " has been successfully changed") << endl;
+                    }
+                    else if (changeChoice == 2) {
+                        cout << "Enter pipes id's set: ";
+                        string id_input;
+                        int n;
+                        set<int> idPipe;
+                        cin >> ws;
+                        getline(cin, id_input);
+                        istringstream ss(id_input);
+                        while (ss >> n)
+                            idPipe.insert(n);
+                        for (int pipe_id : idPipe) {
+                            Pipe& p = pipes[pipe_id];
+                            p.repair = !p.repair;
+                            cout << "The status of pipe " + to_string(pipe_id) + " has been successfully changed" << endl;;
+                        }
                     }
                 }
-                else
-                    cout << "You don'h have filtered compressor stations";
+            }
+            else if (edit_choice == 2) {
+                cout << "1. Edit all filtered compressor stations" << endl;
+                cout << "2. Edit using choosing" << endl;
+                int changeChoice = GetCorrectData(1, 2);
+                if (matching_stations.empty()) 
+                    cout << "You don'h have filtered comressor stations";
+                else {
+                    if (changeChoice == 1) {
+                        for (int cs_id : matching_stations) {
+                            CS& cs = stations[cs_id];
+                            cout << ("\nThe number of workshops: " + to_string(cs.workshop)) << endl;
+                            cout << ("Type the new number of workshops in operation:") << endl;
+                            cs.workshop_on = GetCorrectData(1, cs.workshop);
+                            while (cs.workshop < cs.workshop_on) {
+                                cout << ("\nThe number of workshops can't be less then the number of workshops in operation") << endl;
+                                cout << "Type the right number" << endl;
+                                cs.workshop_on = GetCorrectData(1, cs.workshop);
+                            }
+                            cout << ("The status of compressor station " + to_string(cs_id) + " has been successfully changed") << endl;
+                        }
+                    }
+                    else if (changeChoice == 2) {
+                        cout << "Enter cs id's set: ";
+                        string id_input;
+                        int n;
+                        set<int> idCS;
+                        cin >> ws;
+                        getline(cin, id_input);
+                        istringstream ss(id_input);
+                        while (ss >> n)
+                            idCS.insert(n);
+                        for (int cs_id : idCS) {
+                            CS& cs = stations[cs_id];
+                            cout << ("\nThe number of workshops: " + to_string(cs.workshop)) << endl;
+                            cout << ("Type the new number of workshops in operation:") << endl;
+                            cs.workshop_on = GetCorrectData(1, cs.workshop);
+                            while (cs.workshop < cs.workshop_on) {
+                                cout << ("\nThe number of workshops can't be less then the number of workshops in operation") << endl;
+                                cout << "Type the right number" << endl;
+                                cs.workshop_on = GetCorrectData(1, cs.workshop);
+                            }
+                            cout << ("The status of compressor station " + to_string(cs_id) + " has been successfully changed") << endl;
+                        }
+                    }
+                }
             }
             else
                 cout << "No have this filter" << endl;
@@ -211,20 +260,66 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 cout << "3. Delete both" << endl;
                 int removal_choice = GetCorrectData(1, 3);
                 if (removal_choice == 1 || removal_choice == 3) {
-                    for (int id_pipe : matching_pipes) {
-                        auto pipe_filtered = pipes.find(id_pipe);
-                        pipes.erase(pipe_filtered);
+                    cout << "1. Delete all filtered pipes" << endl;
+                    cout << "2. Delete using choosing" << endl;
+                    int deleteChoice = GetCorrectData(1, 2);
+                    if (deleteChoice == 1) {
+                        for (int id_pipe : matching_pipes) {
+                            auto pipe_filtered = pipes.find(id_pipe);
+                            pipes.erase(pipe_filtered);
+                            cout << "The pipe " + to_string(id_pipe) + " has been successfully deleted" << endl;
+                        }
+                        matching_pipes.clear();
                     }
-                    cout << "Pipes removed succesfully" << endl;
-                    matching_pipes.clear();
+                    else if (deleteChoice == 2) {
+                        cout << "Enter pipes id's set: ";
+                        string id_input;
+                        int n;
+                        set<int> idPipe;
+                        cin >> ws;
+                        getline(cin, id_input);
+                        istringstream ss(id_input);
+                        while (ss >> n)
+                            idPipe.insert(n);
+                        for (int id_pipe : idPipe) {
+                            auto pipe_filtered = pipes.find(id_pipe);
+                            pipes.erase(pipe_filtered);
+                            cout << "The pipe " + to_string(id_pipe) + " has been successfully deleted" << endl;
+                        }
+                    }
+                    else 
+                        cout << "No have this filter" << endl;
                 }
                 else if (removal_choice == 2 || removal_choice == 3) {
-                    for (int id_cs : matching_stations) {
-                        auto cs_filtered = stations.find(id_cs);
-                        stations.erase(cs_filtered);
+                    cout << "1. Delete all filtered compressor stations" << endl;
+                    cout << "2. Delete using choosing" << endl;
+                    int deleteChoice = GetCorrectData(1, 2);
+                    if (deleteChoice == 1) {
+                        for (int id_cs : matching_stations) {
+                            auto cs_filtered = stations.find(id_cs);
+                            stations.erase(cs_filtered);
+                            cout << "The cs " + to_string(id_cs) + " has been successfully deleted" << endl;
+                        }
+                        matching_stations.clear();
                     }
-                    cout << "Compressor stations removed succesfully" << endl;
-                    matching_stations.clear();
+                    else if (deleteChoice == 2) {
+                        cout << "Enter cs id's set: ";
+                        string id_input;
+                        int n;
+                        set<int> idCS;
+                        cin >> ws;
+                        getline(cin, id_input);
+                        istringstream ss(id_input);
+                        while (ss >> n)
+                            idCS.insert(n);
+                        for (int id_cs : idCS) {
+                            auto cs_filtered = stations.find(id_cs);
+                            stations.erase(cs_filtered);
+                            cout << "The cs " + to_string(id_cs) + " has been successfully deleted" << endl;
+                        }
+                    }
+                    else
+                        cout << "No have this filter" << endl;
                 }
             }
             else
@@ -236,21 +331,26 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
     }
 }
 
+void ClearLogFile() {
+    ofstream logFile("log.txt", ios::trunc);
+    logFile.close();
+}
+
 int main()
 {
     unordered_map <int, Pipe> pipes;
     unordered_map <int, CS> stations;
     int value;
-
+    ClearLogFile();
     while (true) {
-        cout << "\nChoose Option:"
-            <<"\n 1. Add pipe"
-            <<"\n 2. Add compressor station"
-            <<"\n 3. View all objects"
-            <<"\n 4. Filter"
-            <<"\n 5. Save"
-            <<"\n 6. Load"
-            <<"\n 7. Exit" << endl;
+        Log("Choose Option:");
+        Log("1. Add pipe");
+        Log("2. Add compressor station");
+        Log("3. View all objects");
+        Log("4. Filter");
+        Log("5. Save");
+        Log("6. Load");
+        Log("7. Exit");
         cout << "\nSelect: ";
         value = GetCorrectData(1,7);
         switch (value) {
