@@ -7,7 +7,7 @@ using namespace std;
 int Pipe::max_id_pipe = 0;
 
 Pipe::Pipe() {
-	id_pipe = max_id_pipe++;
+    id_pipe = max_id_pipe++;
 }
 
 istream& operator >> (istream& in, Pipe& truba) {
@@ -20,7 +20,6 @@ istream& operator >> (istream& in, Pipe& truba) {
     truba.diameter = GetCorrectData(500, 1400);
     cout << "Enter condition of the pipe: ";
     truba.repair = GetCorrectData(0, 1);
-    Log("Your pipe successfully entered",1);
     return in;
 }
 
@@ -43,7 +42,7 @@ void Add_pipes(unordered_map <int, Pipe>& pipes) {
 
 void View_pipes(unordered_map <int, Pipe>& pipes) {
     if (pipes.size() == 0)
-        Log("You don't have pipes", 1);
+        cout << "You don't have pipes" << endl;
     else {
         for (auto& pipe : pipes) {
             cout << pipe.second << endl;
@@ -53,7 +52,7 @@ void View_pipes(unordered_map <int, Pipe>& pipes) {
 
 void Save_pipe(ofstream& fout, const Pipe& p) {
     if (p.name.empty())
-        Log("No Pipe data to record", 1);
+        cout << "No Pipe data to record" << endl;
     else {
         fout << "Pipe" << endl;
         fout << p.name << endl;

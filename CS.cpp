@@ -7,7 +7,7 @@ using namespace std;
 int CS::max_id_cs = 0;
 
 CS::CS() {
-	id_cs = max_id_cs++;
+    id_cs = max_id_cs++;
 }
 
 istream& operator >> (istream& in, CS& comp_station) {
@@ -24,7 +24,6 @@ istream& operator >> (istream& in, CS& comp_station) {
     }
     cout << "Enter efficiency of CS: ";
     comp_station.efficciency = GetCorrectData('A', 'D');
-    Log("Your cs successfully entered", 1);
     return in;
 }
 
@@ -47,7 +46,7 @@ void Add_cs(unordered_map <int, CS>& stations) {
 
 void View_cs(unordered_map <int, CS>& stations) {
     if (stations.size() == 0)
-        Log("You don't have compressor stations", 1);
+        cout << "You don't have compressor stations" << endl;
     else {
         for (auto& cs : stations) {
             cout << cs.second << endl;
@@ -57,7 +56,7 @@ void View_cs(unordered_map <int, CS>& stations) {
 
 void Save_cstation(ofstream& fout, const CS& cs) {
     if (cs.name.empty())
-        Log("No CS data to record", 1);
+        cout << "No CS data to record" << endl;
     else {
         fout << "Compressor station" << endl;
         fout << cs.name << endl;
