@@ -1,36 +1,37 @@
-4 3
+3 3
 Pipe
-333
+0
+pipe 1
+22
+555
+1
+Pipe
+1
+pipe 2
 333
 555
+1
+Pipe
+2
+pipe 3
+333
+555
+1
+Compressor station
 0
-Pipe
-pipe 1
-32
-500
-1
-Pipe
-ppppppp
-12
-600
-1
-Pipe
-pipe 1234 32
-32
-500
-1
-Compressor station
-cs hu
-30
-10
+cs 1
+333
+22
 A
 Compressor station
-cs hhaha
-33
-21
-A
+1
+cs 2
+343
+22
+B
 Compressor station
-www
+2
+cs 3
 34
 21
-B
+C

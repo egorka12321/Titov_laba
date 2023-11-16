@@ -8,5 +8,30 @@ T GetCorrectData(T min, T max) {
         cin.ignore(1000, '\n');
         cout << "Try again (" << min << " - " << max << ")" << endl;
     }
+    cerr << x << endl;
     return x;
 }
+
+#define INPUT_LINE(in, str) getline(in>>ws, str); \
+						cerr << str << endl
+
+#define PRINT_PARAM(out, x) out<< #x << "=" << x << endl
+
+class redirect_output_wrapper
+{
+    std::ostream& stream;
+    std::streambuf* const old_buf;
+public:
+    redirect_output_wrapper(std::ostream& src)
+        :old_buf(src.rdbuf()), stream(src)
+    {
+    }
+
+    ~redirect_output_wrapper() {
+        stream.rdbuf(old_buf);
+    }
+    void redirect(std::ostream& dest)
+    {
+        stream.rdbuf(dest.rdbuf());
+    }
+};

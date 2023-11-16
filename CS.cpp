@@ -33,8 +33,7 @@ ostream& operator << (ostream& out, const CS& cs) {
         << "\nCS name: " << cs.name
         << "\nCS number of the workshops: " << cs.workshop
         << "\nCS number of the workshops in operation: " << cs.workshop_on
-        << "\nCS efficiency: " << cs.efficciency
-        << "\nmax id: " << cs.max_id_cs;
+        << "\nCS efficiency: " << cs.efficciency;
     return out;
 }
 
@@ -59,6 +58,7 @@ void Save_cstation(ofstream& fout, const CS& cs) {
         cout << "No CS data to record" << endl;
     else {
         fout << "Compressor station" << endl;
+        fout << cs.id_cs << endl;
         fout << cs.name << endl;
         fout << cs.workshop << endl;
         fout << cs.workshop_on << endl;
@@ -70,6 +70,8 @@ CS& Load_station(ifstream& fin, CS& cs) {
     string station_string;
     while (getline(fin, station_string)) {
         if (station_string == "Compressor station") {
+            fin >> cs.id_cs;
+            fin.ignore();
             getline(fin, cs.name);
             fin >> cs.workshop >> cs.workshop_on >> cs.efficciency;
             return cs;

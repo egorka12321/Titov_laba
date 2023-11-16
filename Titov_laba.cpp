@@ -4,10 +4,14 @@
 #include <unordered_map>
 #include <set>
 #include <sstream>
+#include <chrono>
+#include <format>
 #include "Pipe.h"
 #include "CS.h"
 #include "Utils.h"
+
 using namespace std;
+using namespace chrono;
 
 void Save(unordered_map <int, Pipe> pipes, unordered_map <int, CS> stations) {
     if (stations.empty() && pipes.empty())
@@ -47,18 +51,32 @@ void Load(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations) {
     fin.open((filename + ".txt"), ios::in);
     if (fin.is_open())
     {
+        pipes.clear();
+        stations.clear();
         fin >> count_pipes >> count_stations;
         if (count_pipes == 0 && count_stations == 0)
             cout << "You don't have pipes and compressor stations" << endl;
         else {
             for (int i = 0; i < count_pipes; i++) {
                 Pipe p1;
-                pipes.insert({ p1.get_id_p(), Load_pipe(fin, p1) });
+                Pipe::max_id_pipe = 0;
+                p1 = Load_pipe(fin, p1);
+                pipes.insert({ p1.get_id_p(), p1});
+                if (Pipe::max_id_pipe < p1.get_id_p()) {
+                    Pipe::max_id_pipe = p1.get_id_p();
+                }
             }
+            Pipe::max_id_pipe++;
             for (int i = 0; i < count_stations; i++) {
                 CS cs1;
-                stations.insert({ cs1.get_id_c(), Load_station(fin, cs1) });
+                CS::max_id_cs = 0;
+                cs1 = Load_station(fin, cs1);
+                stations.insert({ cs1.get_id_c(), cs1});
+                if (CS::max_id_cs < cs1.get_id_c()) {
+                    CS::max_id_cs = cs1.get_id_c();
+                }
             }
+            CS::max_id_cs++;
         }
         cout << "Finished loading from file" << endl;
         fin.close();
@@ -144,11 +162,26 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             else if (filter == 2) {
                 matching_stations.clear();
                 double percent;
+                int pr_choice;
                 cout << "Enter the percent: from 0 or 100: ";
                 percent = GetCorrectData(0, 100);
+                cout << "Choose percent's condition:" << endl;
+                cout << "1. Less than percent" << endl;
+                cout << "2. This percent" << endl;
+                cout << "3. More than percent" << endl;
+                cout << "Select: ";
+                cin >> pr_choice;
                 for (const auto& cs : stations) {
                     double real_percent = ((cs.second.workshop - cs.second.workshop_on) * 100.0 / cs.second.workshop);
-                    if (abs(percent - real_percent) <= 1) {
+                    if (pr_choice == 1 && real_percent < percent) {
+                        matching_stations.insert(cs.first);
+                        cout << stations[cs.first] << endl;
+                    }
+                    else if (pr_choice == 2 && abs(percent - real_percent) <= 0.5) {
+                        matching_stations.insert(cs.first);
+                        cout << stations[cs.first] << endl;
+                    }
+                    else if (pr_choice == 3 && real_percent > percent) {
                         matching_stations.insert(cs.first);
                         cout << stations[cs.first] << endl;
                     }
@@ -167,7 +200,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             int edit_choice = GetCorrectData(1, 2);
             if (edit_choice == 1) {
                 cout << "\n1. Edit all filtered pipes" << endl;
-                cout << "2. Edit using choosing" << endl;
+                cout << "2. Edit using id's choice" << endl;
                 cout << "Select: ";
                 int changeChoice = GetCorrectData(1, 2);
                 if (matching_pipes.empty())
@@ -200,7 +233,7 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
             }
             else if (edit_choice == 2) {
                 cout << "\n1. Edit all filtered compressor stations" << endl;
-                cout << "2. Edit using choosing" << endl;
+                cout << "2. Edit using id's choice" << endl;
                 cout << "Select: ";
                 int changeChoice = GetCorrectData(1, 2);
                 if (matching_stations.empty())
@@ -258,8 +291,8 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                 cout << "Select: ";
                 int removal_choice = GetCorrectData(1, 3);
                 if (removal_choice == 1 || removal_choice == 3) {
-                    cout << "1. Delete all filtered pipes" << endl;
-                    cout << "2. Delete using choosing" << endl;
+                    cout << "\n1. Delete all filtered pipes" << endl;
+                    cout << "2. Delete using id's choice" << endl;
                     cout << "\nSelect: ";
                     int deleteChoice = GetCorrectData(1, 2);
                     if (deleteChoice == 1) {
@@ -290,8 +323,8 @@ void Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations)
                         cout << "No have this filter" << endl;
                 }
                 else if (removal_choice == 2 || removal_choice == 3) {
-                    cout << "1. Delete all filtered compressor stations" << endl;
-                    cout << "2. Delete using choosing" << endl;
+                    cout << "\n1. Delete all filtered compressor stations" << endl;
+                    cout << "2. Delete using id's choice" << endl;
                     cout << "Select: ";
                     int deleteChoice = GetCorrectData(1, 2);
                     if (deleteChoice == 1) {
@@ -335,6 +368,11 @@ int main() {
     unordered_map <int, Pipe> pipes;
     unordered_map <int, CS> stations;
     int value;
+    redirect_output_wrapper cerr_out(cerr);
+    string time = format("{:%d_%m_%Y %H_%M_%OS}", system_clock::now() + hours(3));
+    ofstream logfile("log_" + time+".txt");
+    if (logfile)
+        cerr_out.redirect(logfile);
     while (true) {
         cout << "\nChoose Option:"
             << "\n 1. Add pipe"

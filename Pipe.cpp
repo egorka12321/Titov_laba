@@ -29,8 +29,7 @@ ostream& operator << (ostream& out, const Pipe& p) {
         << "\nPipe name: " << p.name
         << "\nPipe length: " << p.length
         << "\nPipe diameter: " << p.diameter
-        << "\nPipe condition: " << p.repair
-        << "\nmax id: " << p.max_id_pipe << endl;
+        << "\nPipe condition: " << p.repair;
     return out;
 }
 
@@ -55,6 +54,7 @@ void Save_pipe(ofstream& fout, const Pipe& p) {
         cout << "No Pipe data to record" << endl;
     else {
         fout << "Pipe" << endl;
+        fout << p.id_pipe << endl;
         fout << p.name << endl;
         fout << p.length << endl;
         fout << p.diameter << endl;
@@ -66,6 +66,8 @@ Pipe& Load_pipe(ifstream& fin, Pipe& pipe) {
     string pipe_string;
     while (getline(fin, pipe_string)) {
         if (pipe_string == "Pipe") {
+            fin >> pipe.id_pipe;
+            fin.ignore();
             getline(fin, pipe.name);
             fin >> pipe.length >> pipe.diameter >> pipe.repair;
             return pipe;
