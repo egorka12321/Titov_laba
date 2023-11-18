@@ -4,7 +4,7 @@ Pipe
 pipe 1
 22
 555
-1
+0
 Pipe
 1
 pipe 2
@@ -20,18 +20,18 @@ pipe 3
 Compressor station
 0
 cs 1
-333
-22
+40
+30
 A
 Compressor station
 1
 cs 2
-343
-22
+300
+150
 B
 Compressor station
 2
 cs 3
-34
-21
+45
+10
 C

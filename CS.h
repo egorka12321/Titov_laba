@@ -16,8 +16,6 @@ public:
     int get_id_c() { return id_cs; };
     friend ostream& operator << (ostream& out, const CS& cs);
     friend istream& operator >> (istream& in, CS& comp_station);
-    friend void Add_cs(unordered_map <int, CS>& stations);
-    friend void View_cs(unordered_map <int, CS>& stations);
     friend void Save_cstation(ofstream& fout, const CS& cs);
     friend CS& Load_station(ifstream& fin, CS& cs);
 };

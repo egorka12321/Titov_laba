@@ -33,22 +33,6 @@ ostream& operator << (ostream& out, const Pipe& p) {
     return out;
 }
 
-void Add_pipes(unordered_map <int, Pipe>& pipes) {
-    Pipe pipe;
-    cin >> pipe;
-    pipes.insert({ pipe.get_id_p(),pipe });
-}
-
-void View_pipes(unordered_map <int, Pipe>& pipes) {
-    if (pipes.size() == 0)
-        cout << "You don't have pipes" << endl;
-    else {
-        for (auto& pipe : pipes) {
-            cout << pipe.second << endl;
-        }
-    }
-}
-
 void Save_pipe(ofstream& fout, const Pipe& p) {
     if (p.name.empty())
         cout << "No Pipe data to record" << endl;

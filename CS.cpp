@@ -37,12 +37,6 @@ ostream& operator << (ostream& out, const CS& cs) {
     return out;
 }
 
-void Add_cs(unordered_map <int, CS>& stations) {
-    CS station;
-    cin >> station;
-    stations.insert({ station.get_id_c(),station });
-}
-
 void View_cs(unordered_map <int, CS>& stations) {
     if (stations.size() == 0)
         cout << "You don't have compressor stations" << endl;

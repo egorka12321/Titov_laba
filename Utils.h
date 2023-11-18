@@ -12,11 +12,6 @@ T GetCorrectData(T min, T max) {
     return x;
 }
 
-#define INPUT_LINE(in, str) getline(in>>ws, str); \
-						cerr << str << endl
-
-#define PRINT_PARAM(out, x) out<< #x << "=" << x << endl
-
 class redirect_output_wrapper
 {
     std::ostream& stream;

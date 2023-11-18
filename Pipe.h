@@ -16,8 +16,6 @@ public:
 	int get_id_p() { return id_pipe; };
 	friend ostream& operator << (ostream& out, const Pipe& p);
 	friend istream& operator >> (istream& in, Pipe& truba);
-	friend void Add_pipes(unordered_map <int, Pipe>& pipes);
-	friend void View_pipes(unordered_map <int, Pipe>& pipes);
 	friend void Save_pipe(ofstream& fout, const Pipe& p);
 	friend Pipe& Load_pipe(ifstream& fin, Pipe& pipe);
 };
