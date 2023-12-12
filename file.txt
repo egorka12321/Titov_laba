@@ -1,22 +1,40 @@
-3 3
+6 7
 Pipe
 0
 pipe 1
 22
-555
+500
 0
 Pipe
 1
 pipe 2
 333
-555
-1
+700
+0
 Pipe
 2
 pipe 3
 333
-555
-1
+1000
+0
+Pipe
+3
+pipe 4
+123
+500
+0
+Pipe
+4
+pipe 5
+300
+700
+0
+Pipe
+5
+pipe 6
+12
+500
+0
 Compressor station
 0
 cs 1
@@ -35,3 +53,27 @@ cs 3
 45
 10
 C
+Compressor station
+3
+cs 4
+45
+43
+A
+Compressor station
+4
+cs 5
+66
+64
+C
+Compressor station
+5
+cs 6
+56
+43
+A
+Compressor station
+6
+cs 7
+56
+21
+A

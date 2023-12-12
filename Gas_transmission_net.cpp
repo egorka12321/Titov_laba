@@ -6,6 +6,8 @@
 #include <fstream>
 #include <set>
 #include <sstream>
+#include <stack>
+#include <unordered_set>
 
 void GTN::Add_pipes(unordered_map<int, Pipe>& pipes)
 {
@@ -39,7 +41,7 @@ void GTN::View_objects(unordered_map <int, Pipe>& pipes, unordered_map<int, CS>&
     }
 }
 
-void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations) {
+void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations, vector<vector<Connection>>& graph) {
     set<int> matching_pipes;
     set<int> matching_stations;
     int value;
@@ -191,7 +193,7 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                 cout << "Select: ";
                 int changeChoice = GetCorrectData(1, 2);
                 if (matching_stations.empty())
-                    cout << "You don'h have filtered comressor stations";
+                    cout << "You don't have filtered comressor stations";
                 else {
                     if (changeChoice == 1) {
                         for (int cs_id : matching_stations) {
@@ -199,11 +201,6 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                             cout << ("\nThe number of workshops: " + to_string(cs.workshop)) << endl;
                             cout << ("Type the new number of workshops in operation: ") << endl;
                             cs.workshop_on = GetCorrectData(1, cs.workshop);
-                            while (cs.workshop < cs.workshop_on) {
-                                cout << ("\nThe number of workshops can't be less then the number of workshops in operation") << endl;
-                                cout << "Type the right number: ";
-                                cs.workshop_on = GetCorrectData(1, cs.workshop);
-                            }
                             cout << ("The status of compressor station " + to_string(cs_id) + " has been successfully changed") << endl;
                         }
                     }
@@ -222,11 +219,6 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                             cout << ("\nThe number of workshops: " + to_string(cs.workshop)) << endl;
                             cout << ("Type the new number of workshops in operation: ") << endl;
                             cs.workshop_on = GetCorrectData(1, cs.workshop);
-                            while (cs.workshop < cs.workshop_on) {
-                                cout << ("\nThe number of workshops can't be less then the number of workshops in operation") << endl;
-                                cout << "Type the right number: ";
-                                cs.workshop_on = GetCorrectData(1, cs.workshop);
-                            }
                             cout << ("The status of compressor station " + to_string(cs_id) + " has been successfully changed") << endl;
                         }
                     }
@@ -253,6 +245,7 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                         for (int id_pipe : matching_pipes) {
                             auto pipe_filtered = pipes.find(id_pipe);
                             pipes.erase(pipe_filtered);
+                            Remove_edge_and_unused_vertices(id_pipe, graph);
                             cout << "The pipe " + to_string(id_pipe) + " has been successfully deleted" << endl;
                         }
                         matching_pipes.clear();
@@ -270,6 +263,7 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                         for (int id_pipe : idPipe) {
                             auto pipe_filtered = pipes.find(id_pipe);
                             pipes.erase(pipe_filtered);
+                            Remove_edge_and_unused_vertices(id_pipe, graph);
                             cout << "The pipe " + to_string(id_pipe) + " has been successfully deleted" << endl;
                         }
                     }
@@ -285,6 +279,9 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                         for (int id_cs : matching_stations) {
                             auto cs_filtered = stations.find(id_cs);
                             stations.erase(cs_filtered);
+                            if (id_cs < graph.size()) {
+                                Remove_vertex(id_cs, graph);
+                            }
                             cout << "The cs " + to_string(id_cs) + " has been successfully deleted" << endl;
                         }
                         matching_stations.clear();
@@ -302,6 +299,9 @@ void GTN::Filter(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stat
                         for (int id_cs : idCS) {
                             auto cs_filtered = stations.find(id_cs);
                             stations.erase(cs_filtered);
+                            if (id_cs < graph.size()) {
+                                Remove_vertex(id_cs, graph);
+                            }
                             cout << "The cs " + to_string(id_cs) + " has been successfully deleted" << endl;
                         }
                     }
@@ -337,7 +337,7 @@ void GTN::Save(unordered_map <int, Pipe> pipes, unordered_map <int, CS> stations
             }
         }
         else {
-            cout << ("Didn't find the file with name " + filename + " to save") << endl;
+            cout << ("Wasn't found the file with name " + filename + " to save") << endl;
         }
         string count_p = to_string(pipes.size());
         cout << ("You saved " + count_p + " pipe(-s)") << endl;
@@ -387,5 +387,298 @@ void GTN::Load(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& statio
         fin.close();
     }
     else
-        cout << ("Didn't find the file with name " + filename + " to save") << endl;
+        cout << ("Wasn't found the file with name " + filename + " to save") << endl;
 }
+
+int GTN::Add_newpipe_connect(unordered_map <int, Pipe>& pipes, int diameter) {
+    Pipe p;
+    cin >> p;
+    if (!(p.diameter == diameter))
+    {
+        p.diameter = diameter;
+        cout << "\nYour diameter has been changed to the previously entered one: " << diameter << endl;
+    }
+    int new_pipe_id = p.get_id_p();
+    pipes.insert({ new_pipe_id, p });
+    return new_pipe_id;
+}
+
+void GTN::Connect_cs_and_pipes(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph) {
+    int id_in, id_out, diameter;
+    cout << "Enter the id of the input cs: ";
+    id_in = GetCorrectData(0, CS::max_id_cs);
+    if (stations.find(id_in) == stations.end()) {
+        cout << "Wasn't found cs with " + to_string(id_in) + " id. Close connection" << endl;
+        return;
+    }
+
+    int max_id = id_in;
+    if (max_id >= graph.size()) {
+        graph.resize(max_id + 1);
+    }
+
+    int total_connections = 0;
+    for (const auto& connection : graph) {
+        for (const auto& conn : connection) {
+            if ((conn.input_station == id_in) or (conn.output_station == id_in)){
+                total_connections++;
+            }
+        }
+    }
+    if (total_connections >= 2) {
+        cout << "Input cs already has the maximum number of connections (2). Close connection" << endl;
+        return;
+    }
+
+    cout << "Enter the id of the output cs: ";
+    id_out = GetCorrectData(0, CS::max_id_cs);
+    if (stations.find(id_out) == stations.end()) {
+        cout << "Wasn't found cs with " + to_string(id_out) + " id. Close connection" << endl;
+        return;
+    }
+
+    max_id = max(id_in, id_out);
+    if (max_id >= graph.size()) {
+        graph.resize(max_id + 1);
+    }
+
+    total_connections = 0;
+    for (const auto& connection : graph) {
+        for (const auto& conn : connection) {
+            if ((conn.input_station == id_out) or (conn.output_station == id_out)) {
+                total_connections++;
+            }
+        }
+    }
+    if (total_connections >= 2) {
+        cout << "Output cs already has the maximum number of connections (2). Close connection" << endl;
+        return;
+    }
+
+    cout << "Enter the diameter of the pipe: ";
+    diameter = GetCorrectData(500, 1400);
+    while (!(diameter == 500 || diameter == 700 || diameter == 1000 || diameter == 1400)) {
+        cout << "The diameter can only be 500, 700, 1000 or 1400\nEnter diameter of the pipe: ";
+        diameter = GetCorrectData(500, 1400);
+    }
+
+    int available_pipe_id = -1;
+    for (const auto& pipe_entry : pipes) {
+        const Pipe& p = pipe_entry.second;
+        if (!p.repair && p.diameter == diameter) {
+            bool is_pipe_connected = false;
+            for (const auto& connection : graph) {
+                for (const auto& conn : connection) {
+                    if (conn.pipe == pipe_entry.first) {
+                        is_pipe_connected = true;
+                        break;
+                    }
+                }
+                if (is_pipe_connected)
+                    break;
+            }
+            if (!is_pipe_connected) {
+                available_pipe_id = pipe_entry.first;
+                break;
+            }
+        }
+    }
+
+    if (available_pipe_id == -1) {
+        cout << "No available pipe found. Adding a new pipe" << endl;
+        available_pipe_id = Add_newpipe_connect(pipes, diameter);
+        cout << "Created a new pipe with id " << available_pipe_id << " and diameter " << diameter << endl;
+    }
+
+    if (pipes[available_pipe_id].repair) {
+        cout << "Error: The selected pipe is under repair. Close connection" << endl;
+        return;
+    }
+
+    Connection newConnection = { id_in, available_pipe_id, id_out };
+    graph[id_in].push_back(newConnection);
+    cout << "\nSuccessfully connected compressor stations " << id_in << " and " << id_out << " with pipe " << available_pipe_id << endl;
+
+    cout << "Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+    for (int i = 0; i < graph.size(); ++i) {
+        cout << i << " : ";
+        for (const auto& connection : graph[i]) {
+            cout << "(" << connection.input_station << ", " << connection.pipe << ", " << connection.output_station << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void GTN::Remove_vertex(int vertex, vector<vector<Connection>>& graph) {
+    for (auto& connections : graph) {
+        connections.erase(
+            remove_if(connections.begin(), connections.end(), [vertex](const Connection& conn) {
+                return conn.input_station == vertex || conn.output_station == vertex;
+                }),
+            connections.end()
+        );
+    }
+
+    cout << "Vertex " << vertex << " and its connections removed successfully." << endl;
+    cout << "Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+    for (int i = 0; i < graph.size(); ++i) {
+        cout << i << " : ";
+        for (const auto& connection : graph[i]) {
+            cout << "(" << connection.input_station << ", " << connection.pipe << ", " << connection.output_station << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void GTN::Remove_edge_and_unused_vertices(int id_pipe, vector<vector<Connection>>& graph) {
+    for (auto& connections : graph) {
+        connections.erase(remove_if(connections.begin(), connections.end(), [id_pipe](const Connection& conn) 
+            {return conn.pipe == id_pipe;}),connections.end());
+    }
+
+    cout << "Pipe " << id_pipe << " and its connections removed successfully." << endl;
+    cout << "Graph (Compressor station -> Pipe -> Compressor station):" << endl;
+    for (int i = 0; i < graph.size(); ++i) {
+        cout << i << " : ";
+        for (const auto& connection : graph[i]) {
+            cout << "(" << connection.input_station << ", " << connection.pipe << ", " << connection.output_station << ") ";
+        }
+        cout << endl;
+    }
+}
+
+void GTN::Remove_connection(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph) {
+    int id_in, id_out, id_pipe;
+    bool connection_found = false;
+
+    cout << "\nEnter id of the input cs: ";
+    id_in = GetCorrectData(0, CS::max_id_cs);
+    if (stations.find(id_in) == stations.end()) {
+        cout << "Input cs wasn't found. Close connection" << endl;
+        return;
+    }
+
+    cout << "Enter id of the pipe: ";
+    id_pipe = GetCorrectData(0, Pipe::max_id_pipe);
+    if (pipes.find(id_pipe) == pipes.end()) {
+        cout << "The pipe wasn't found. Close connection" << endl;
+        return;
+    }
+
+    cout << "Enter id of the output cs: ";
+    id_out = GetCorrectData(0, CS::max_id_cs);
+    if (stations.find(id_in) == stations.end()) {
+        cout << "Output cs wasn't found. Close connection" << endl;
+        return;
+    }
+
+    for (const auto& connections : graph) {
+        for (const Connection& conn : connections) {
+            if (conn.input_station == id_in && conn.output_station == id_out && conn.pipe == id_pipe) {
+                connection_found = true;
+                break;
+            }
+        }
+        if (connection_found) {
+            break;
+        }
+    }
+
+    if (connection_found) {
+        for (auto& connections : graph) {
+            connections.erase(
+                remove_if(connections.begin(), connections.end(), [id_in, id_out, id_pipe](const Connection& conn) {
+                    return conn.input_station == id_in && conn.output_station == id_out && conn.pipe == id_pipe;
+                    }), connections.end());
+        }
+
+        cout << "Connection with input cs id " + to_string(id_in) + ", pipe's id " + to_string(id_pipe) + " and output cs id " + to_string(id_out) + " has been successfully deleted" << endl;
+
+        cout << "Update graph (Compressor station -> Pipe -> Compressor station):" << endl;
+        for (int i = 0; i < graph.size(); ++i) {
+            cout << i << " : ";
+            for (const auto& connection : graph[i]) {
+                cout << "(" << connection.input_station << ", " << connection.pipe << ", " << connection.output_station << ") ";
+            }
+            cout << endl;
+        }
+    }
+    else {
+        cout << "The connection wasn't found in the graph" << endl;
+    }
+}
+
+//vector<Connection> flattenGraph(const vector<vector<Connection>>& graph) {
+//    vector<Connection> flattened;
+//    for (const auto& connections : graph) {
+//        for (const auto& connection : connections) {
+//            flattened.push_back(connection);
+//        }
+//    }
+//    return flattened;
+//}
+
+static bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, stack<int>& stack, unordered_set<int>& currentPath) {
+    visited[v] = true;
+    currentPath.insert(v);
+    for (const Connection& conn : graph[v]) {
+        if (currentPath.find(conn.output_station) != currentPath.end()) {
+            cout << "Graph has a cycle." << endl;
+            return false;  // Граф содержит цикл
+        }
+        if (!visited[conn.output_station]) {
+            if (!DFS(conn.output_station, graph, visited, stack, currentPath)) {
+                return false;
+            }
+        }
+    }
+    currentPath.erase(v);
+    stack.push(v);
+    return true;
+}
+
+void GTN::Topological_sort(vector<vector<Connection>>& graph)
+{
+    int numVertices = graph.size();
+    vector<bool> visited(numVertices, false);
+    stack<int> stack;
+    unordered_set<int> currentPath;
+
+    for (int i = numVertices - 1; i >= 0; --i) {
+        if (!visited[i]) {
+            if (!DFS(i, graph, visited, stack, currentPath)) {
+                return;
+            }
+        }
+    }
+
+    // Выводим результат топологической сортировки
+    cout << "Topological order: ";
+    while (!stack.empty()) {
+        cout << stack.top() << " ";
+        stack.pop();
+    }
+    cout << endl;
+}
+
+void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph) {
+    while (true) {
+        cout << "\nSelect actions:" << endl;
+        cout << "1. Delete connection" << endl;
+        cout << "2. Topological sort" << endl;
+        cout << "3. Exit" << endl;
+        cout << "Select: ";
+        int choice = GetCorrectData(1, 3);
+        switch (choice) {
+            case 1:
+                Remove_connection(pipes, stations, graph);
+                break;
+            case 2:
+                Topological_sort(graph);
+                break;
+            case 3:
+                return;
+        }
+    }
+}
+

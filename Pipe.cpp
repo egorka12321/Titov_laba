@@ -18,6 +18,10 @@ istream& operator >> (istream& in, Pipe& truba) {
     truba.length = GetCorrectData(0.0, 10000.0);
     cout << "Enter diameter of the pipe: ";
     truba.diameter = GetCorrectData(500, 1400);
+    while (!(truba.diameter == 500 || truba.diameter == 700 || truba.diameter == 1000 || truba.diameter == 1400)) {
+        cout << "The diameter can only be 500, 700, 1000 or 1400\nEnter diameter of the pipe: ";
+        truba.diameter = GetCorrectData(500, 1400);
+    }
     cout << "Enter condition of the pipe: ";
     truba.repair = GetCorrectData(0, 1);
     return in;

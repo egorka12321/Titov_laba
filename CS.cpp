@@ -18,10 +18,6 @@ istream& operator >> (istream& in, CS& comp_station) {
     comp_station.workshop = GetCorrectData(1, 10000);
     cout << "Enter number of the workshops in operation: ";
     comp_station.workshop_on = GetCorrectData(1, comp_station.workshop);
-    while (comp_station.workshop_on > comp_station.workshop) {
-        cout << "Cant be like this!!!" << endl;
-        comp_station.workshop_on = GetCorrectData(1, comp_station.workshop);
-    }
     cout << "Enter efficiency of CS: ";
     comp_station.efficciency = GetCorrectData('A', 'D');
     return in;
@@ -35,16 +31,6 @@ ostream& operator << (ostream& out, const CS& cs) {
         << "\nCS number of the workshops in operation: " << cs.workshop_on
         << "\nCS efficiency: " << cs.efficciency;
     return out;
-}
-
-void View_cs(unordered_map <int, CS>& stations) {
-    if (stations.size() == 0)
-        cout << "You don't have compressor stations" << endl;
-    else {
-        for (auto& cs : stations) {
-            cout << cs.second << endl;
-        }
-    }
 }
 
 void Save_cstation(ofstream& fout, const CS& cs) {
