@@ -618,22 +618,23 @@ void GTN::Remove_connection(unordered_map<int, Pipe>& pipes, unordered_map<int, 
 //    return flattened;
 //}
 
-static bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, stack<int>& stack, unordered_set<int>& currentPath) {
+static bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<int>& result, unordered_set<int>& currentPath) {
     visited[v] = true;
     currentPath.insert(v);
     for (const Connection& conn : graph[v]) {
+        cout << v;
         if (currentPath.find(conn.output_station) != currentPath.end()) {
             cout << "Graph has a cycle." << endl;
             return false;  // Граф содержит цикл
         }
         if (!visited[conn.output_station]) {
-            if (!DFS(conn.output_station, graph, visited, stack, currentPath)) {
+            if (!DFS(conn.output_station, graph, visited, result, currentPath)) {
                 return false;
             }
         }
     }
     currentPath.erase(v);
-    stack.push(v);
+    result.push_back(v);
     return true;
 }
 
@@ -641,22 +642,40 @@ void GTN::Topological_sort(vector<vector<Connection>>& graph)
 {
     int numVertices = graph.size();
     vector<bool> visited(numVertices, false);
-    stack<int> stack;
+    vector<int> result;  // Store the topological order here
     unordered_set<int> currentPath;
 
     for (int i = numVertices - 1; i >= 0; --i) {
         if (!visited[i]) {
-            if (!DFS(i, graph, visited, stack, currentPath)) {
+            if (!DFS(i, graph, visited, result, currentPath)) {
                 return;
             }
         }
     }
 
+    vector<int> stations;
+    for (int i = 0; i < graph.size(); i++) {
+        for (auto& connections : graph[i]) {
+            int firstElement = connections.input_station;
+            int thirdElement = connections.output_station;
+            if (find(stations.begin(), stations.end(), firstElement) == stations.end())
+                stations.push_back(firstElement);
+            if (find(stations.begin(), stations.end(), thirdElement) == stations.end())
+                stations.push_back(thirdElement);
+        }
+    }
+
+    result.erase(
+        std::remove_if(result.begin(), result.end(), [&](int station) {
+            return find(stations.begin(), stations.end(), station) == stations.end();
+            }),
+        result.end()
+    );
+
     // Выводим результат топологической сортировки
     cout << "Topological order: ";
-    while (!stack.empty()) {
-        cout << stack.top() << " ";
-        stack.pop();
+    for (int i = result.size() - 1; i >= 0; --i) {
+        cout << result[i] << " ";
     }
     cout << endl;
 }
