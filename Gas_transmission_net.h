@@ -23,4 +23,5 @@ public:
 	void Remove_connection(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph);
 	void Operations_with_graph(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations, vector<vector<Connection>>& graph);
 	void Topological_sort(vector<vector<Connection>>& graph);
+	void Dijkstra(unordered_map <int, Pipe>& pipes, const vector<vector<Connection>>& graph);
 };

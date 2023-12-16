@@ -8,6 +8,7 @@
 #include <sstream>
 #include <stack>
 #include <unordered_set>
+#include <queue>
 
 void GTN::Add_pipes(unordered_map<int, Pipe>& pipes)
 {
@@ -622,7 +623,6 @@ static bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& vi
     visited[v] = true;
     currentPath.insert(v);
     for (const Connection& conn : graph[v]) {
-        cout << v;
         if (currentPath.find(conn.output_station) != currentPath.end()) {
             cout << "Graph has a cycle." << endl;
             return false;  // √раф содержит цикл
@@ -666,7 +666,7 @@ void GTN::Topological_sort(vector<vector<Connection>>& graph)
     }
 
     result.erase(
-        std::remove_if(result.begin(), result.end(), [&](int station) {
+        remove_if(result.begin(), result.end(), [&](int station) {
             return find(stations.begin(), stations.end(), station) == stations.end();
             }),
         result.end()
@@ -680,14 +680,57 @@ void GTN::Topological_sort(vector<vector<Connection>>& graph)
     cout << endl;
 }
 
+void GTN::Dijkstra(unordered_map <int, Pipe>& pipes, const vector<vector<Connection>>& graph) {
+    Pipe p;
+    int n = graph.size();
+    int start, end;
+    cout << "Enter the start vertex id: ";
+    cin >> start;
+    cout << "Enter the end vertex id: ";
+    cin >> end;
+    vector<double> distance(n, INT_MAX); // »сходные рассто€ни€ устанавливаютс€ в бесконечность
+    distance[start] = 0; // –ассто€ние от начальной вершины до самой себ€ равно 0
+
+    // —оздаем приоритетную очередь дл€ хранени€ вершин и их рассто€ний
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push({ 0, start });
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        // ќбходим все соседние вершины текущей вершины
+        for (const auto& connection : graph[u]) {
+            int v = connection.output_station;
+            double weight = 0;
+            for (const auto& p : pipes) {
+                if (p.second.id_pipe == connection.pipe)
+                    weight = p.second.length;
+            }
+            // ≈сли нашли более короткий путь до вершины v, обновл€ем рассто€ние
+            if (distance[u] + weight < distance[v]) {
+                distance[v] = distance[u] + weight;
+                pq.push({ distance[v], v });
+            }
+        }
+    }
+
+    // ¬ывод рассто€ни€ между заданными вершинами
+    if (distance[end] != 2147483647)
+        cout << "The shortest distance from vertex " << start << " to vertex " << end << ": " << distance[end] << endl;
+    else
+        cout << "Maybe you want to find the shortest distance from " << end << " to " << start << "?";
+}
+
 void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph) {
     while (true) {
         cout << "\nSelect actions:" << endl;
         cout << "1. Delete connection" << endl;
         cout << "2. Topological sort" << endl;
-        cout << "3. Exit" << endl;
+        cout << "3. The shortest length" << endl;
+        cout << "4. Exit" << endl;
         cout << "Select: ";
-        int choice = GetCorrectData(1, 3);
+        int choice = GetCorrectData(1, 4);
         switch (choice) {
             case 1:
                 Remove_connection(pipes, stations, graph);
@@ -696,6 +739,9 @@ void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<i
                 Topological_sort(graph);
                 break;
             case 3:
+                Dijkstra(pipes, graph);
+                break;
+            case 4:
                 return;
         }
     }
