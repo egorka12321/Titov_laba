@@ -23,5 +23,8 @@ public:
 	void Remove_connection(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph);
 	void Operations_with_graph(unordered_map <int, Pipe>& pipes, unordered_map <int, CS>& stations, vector<vector<Connection>>& graph);
 	void Topological_sort(vector<vector<Connection>>& graph);
-	void Dijkstra(unordered_map <int, Pipe>& pipes, const vector<vector<Connection>>& graph);
+	void Dijkstra(unordered_map <int, Pipe>& pipes, unordered_map<int, CS>& stations, const vector<vector<Connection>>& graph);
+	void Find_and_print_capacities(unordered_map<int, Pipe>& pipe, vector<vector<Connection>>& graph);
+	void Max_flow(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph);
 };
+

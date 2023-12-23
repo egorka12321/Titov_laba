@@ -609,16 +609,6 @@ void GTN::Remove_connection(unordered_map<int, Pipe>& pipes, unordered_map<int, 
     }
 }
 
-//vector<Connection> flattenGraph(const vector<vector<Connection>>& graph) {
-//    vector<Connection> flattened;
-//    for (const auto& connections : graph) {
-//        for (const auto& connection : connections) {
-//            flattened.push_back(connection);
-//        }
-//    }
-//    return flattened;
-//}
-
 static bool DFS(int v, const vector<vector<Connection>>& graph, vector<bool>& visited, vector<int>& result, unordered_set<int>& currentPath) {
     visited[v] = true;
     currentPath.insert(v);
@@ -680,14 +670,22 @@ void GTN::Topological_sort(vector<vector<Connection>>& graph)
     cout << endl;
 }
 
-void GTN::Dijkstra(unordered_map <int, Pipe>& pipes, const vector<vector<Connection>>& graph) {
+void GTN::Dijkstra(unordered_map <int, Pipe>& pipes, unordered_map<int, CS>& stations, const vector<vector<Connection>>& graph) {
     Pipe p;
     int n = graph.size();
     int start, end;
     cout << "Enter the start vertex id: ";
     cin >> start;
+    if (stations.find(start) == stations.end()) {
+        cout << "Input cs wasn't found. Close connection." << endl;
+        return;
+    }
     cout << "Enter the end vertex id: ";
     cin >> end;
+    if (stations.find(end) == stations.end()) {
+        cout << "Output cs wasn't found. Close connection." << endl;
+        return;
+    }
     vector<double> distance(n, INT_MAX); // »сходные рассто€ни€ устанавливаютс€ в бесконечность
     distance[start] = 0; // –ассто€ние от начальной вершины до самой себ€ равно 0
 
@@ -716,10 +714,102 @@ void GTN::Dijkstra(unordered_map <int, Pipe>& pipes, const vector<vector<Connect
     }
 
     // ¬ывод рассто€ни€ между заданными вершинами
-    if (distance[end] != 2147483647)
+    if (distance[end] != INT_MAX)
         cout << "The shortest distance from vertex " << start << " to vertex " << end << ": " << distance[end] << endl;
     else
-        cout << "Maybe you want to find the shortest distance from " << end << " to " << start << "?";
+        cout << "Maybe you want to find the shortest distance from " << end << " to " << start << "?" << endl;
+}
+
+static double Calculate_capacity(const Pipe& pipe) {
+    if (pipe.repair) {
+        return 0.0;
+    }
+    else {
+        return 0.01 * sqrt(pow(pipe.diameter, 5) / pipe.length);
+    }
+}
+
+void GTN::Find_and_print_capacities(unordered_map<int, Pipe>& pipe, vector<vector<Connection>>& graph) {
+    cout << "Capacities for each Pipe:" << endl;
+
+    for (const auto& connections : graph) {
+        for (const auto& connection : connections) {
+            int pipe_id = connection.pipe;
+            double pipe_capacity = Calculate_capacity(pipe[pipe_id]);
+
+            cout << "Pipe " << pipe_id << ": Capacity = " << pipe_capacity << endl;
+        }
+    }
+}
+
+void GTN::Max_flow(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph)
+{
+    int start, end;
+    cout << "Enter the start vertex id: ";
+    cin >> start;
+    if (stations.find(start) == stations.end()) {
+        cout << "Input cs wasn't found. Close connection." << endl;
+        return;
+    }
+    cout << "Enter the end vertex id: ";
+    cin >> end;
+    if (stations.find(end) == stations.end()) {
+        cout << "Output cs wasn't found. Close connection." << endl;
+        return;
+    }
+
+    vector<vector<double>> residual(graph.size(), vector<double>(graph.size(), 0.0));
+
+    for (int i = 0; i < graph.size(); ++i) {
+        for (const auto& connection : graph[i]) {
+            residual[i][connection.output_station] = Calculate_capacity(pipes[connection.pipe]);
+        }
+    }
+
+    double max_flow = 0.0;
+
+    while (true) {
+        vector<int> parent(graph.size(), -1);
+        queue<pair<int, double>> q;
+        q.push({ start, INT_MAX });
+
+        while (!q.empty()) {
+            int current = q.front().first;
+            double capacity = q.front().second;
+            q.pop();
+
+            for (const auto& connection : graph[current]) {
+                int next = connection.output_station;
+                double residual_capacity = residual[current][next];
+
+                if (parent[next] == -1 && residual_capacity > 0) {
+                    parent[next] = current;
+                    double min_capacity = min(capacity, residual_capacity);
+                    q.push({ next, min_capacity });
+
+                    if (next == end) {
+                        max_flow += min_capacity;
+
+                        int u = next;
+                        while (u != start) {
+                            int v = parent[u];
+                            residual[v][u] -= min_capacity;
+                            residual[u][v] += min_capacity;
+                            u = v;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (parent[end] == -1) {
+            break;
+        }
+    }
+
+    cout << "Max flow from vertex " << start << " to vertex " << end << ": "<< max_flow << endl;
 }
 
 void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<int, CS>& stations, vector<vector<Connection>>& graph) {
@@ -728,9 +818,10 @@ void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<i
         cout << "1. Delete connection" << endl;
         cout << "2. Topological sort" << endl;
         cout << "3. The shortest length" << endl;
-        cout << "4. Exit" << endl;
+        cout << "4. Maximum flow" << endl;
+        cout << "5. Exit" << endl;
         cout << "Select: ";
-        int choice = GetCorrectData(1, 4);
+        int choice = GetCorrectData(1, 5);
         switch (choice) {
             case 1:
                 Remove_connection(pipes, stations, graph);
@@ -739,9 +830,13 @@ void GTN::Operations_with_graph(unordered_map<int, Pipe>& pipes, unordered_map<i
                 Topological_sort(graph);
                 break;
             case 3:
-                Dijkstra(pipes, graph);
+                Dijkstra(pipes, stations, graph);
                 break;
             case 4:
+                Find_and_print_capacities(pipes, graph);
+                Max_flow(pipes, stations, graph);
+                break;
+            case 5:
                 return;
         }
     }
